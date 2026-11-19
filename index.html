@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickCalc | Premium Calculator</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #090909;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 25px;
+  text-align: center;
+  border-bottom: 1px solid #29231a;
+}
+
+.logo {
+  font-size: 30px;
+  font-weight: bold;
+  color: #d6ad60;
+  letter-spacing: 2px;
+}
+
+header p { color: #999; }
+
+main {
+  max-width: 440px;
+  margin: 30px auto;
+  padding: 15px;
+}
+
+.card {
+  background: #151515;
+  border: 1px solid #40331f;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: #d6ad60;
+  font-size: 19px;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0;
+  border-radius: 10px;
+  border: 1px solid #40331f;
+  background: #080808;
+  color: white;
+  font-size: 17px;
+}
+
+button {
+  background: #d6ad60;
+  color: #090909;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+button:hover { background: #f0ce8a; }
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.buttons button {
+  height: 55px;
+  font-size: 20px;
+  margin: 0;
+}
+
+.buttons .operator {
+  background: #393022;
+  color: #e6c27e;
+}
+
+#display {
+  font-size: 26px;
+  text-align: right;
+  height: 65px;
+}
+
+.result {
+  color: #d6ad60;
+  font-size: 22px;
+  margin-top: 15px;
+  overflow-wrap: anywhere;
+}
+
+.full { width: 100%; }
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">QUICKCALC.</div>
+  <p>Smart calculations. Simple life.</p>
+</header>
+
+<main>
+
+<section class="card">
+<h2>Basic Calculator</h2>
+<input id="display" readonly placeholder="0">
+
+<div class="buttons">
+<button onclick="clearCalc()">C</button>
+<button onclick="backspace()">DEL</button>
+<button class="operator" onclick="add('/')">÷</button>
+<button class="operator" onclick="add('*')">×</button>
+
+<button onclick="add('7')">7</button>
+<button onclick="add('8')">8</button>
+<button onclick="add('9')">9</button>
+<button class="operator" onclick="add('-')">−</button>
+
+<button onclick="add('4')">4</button>
+<button onclick="add('5')">5</button>
+<button onclick="add('6')">6</button>
+<button class="operator" onclick="add('+')">+</button>
+
+<button onclick="add('1')">1</button>
+<button onclick="add('2')">2</button>
+<button onclick="add('3')">3</button>
+<button onclick="calculate()">=</button>
+
+<button onclick="add('0')">0</button>
+<button onclick="add('.')">.</button>
+<button onclick="add('(')">(</button>
+<button onclick="add(')')">)</button>
+</div>
+</section>
+
+<section class="card">
+<h2>Percentage Calculator</h2>
+<input type="number" id="percent" placeholder="Percentage">
+<input type="number" id="number" placeholder="Number">
+<button class="full" onclick="percentage()">Calculate</button>
+<div class="result" id="percentResult"></div>
+</section>
+
+<section class="card">
+<h2>Discount Calculator</h2>
+<input type="number" id="price" placeholder="Original price">
+<input type="number" id="discount" placeholder="Discount percentage">
+<button class="full" onclick="discountCalc()">Calculate</button>
+<div class="result" id="discountResult"></div>
+</section>
+
+<section class="card">
+<h2>Age Calculator</h2>
+<input type="date" id="birthday">
+<button class="full" onclick="ageCalc()">Calculate Age</button>
+<div class="result" id="ageResult"></div>
+</section>
+
+<section class="card">
+<h2>Unit Converter</h2>
+<input type="number" id="km" placeholder="Kilometers">
+<button class="full" onclick="convert()">Convert to meters</button>
+<div class="result" id="convertResult"></div>
+</section>
+
+</main>
+
+<footer>
+© 2026 QuickCalc. All rights reserved.
+</footer>
+
+<script>
+const display = document.getElementById("display");
+
+function add(value) {
+  display.value += value;
+}
+
+function clearCalc() {
+  display.value = "";
+}
+
+function backspace() {
+  display.value = display.value.slice(0, -1);
+}
+
+function calculate() {
+  const expression = display.value;
+
+  if (!/^[0-9+\-*/.() ]+$/.test(expression)) {
+    display.value = "Error";
+    return;
+  }
+
+  try {
+    const result = Function(
+      '"use strict"; return (' + expression + ')'
+    )();
+
+    display.value = Number.isFinite(result)
+      ? result : "Error";
+  } catch {
+    display.value = "Error";
+  }
+}
+
+function percentage() {
+  const p = Number(document.getElementById("percent").value);
+  const n = Number(document.getElementById("number").value);
+
+  if (document.getElementById("percent").value === "" ||
+      document.getElementById("number").value === "") {
+    document.getElementById("percentResult").textContent =
+      "Enter both numbers.";
+    return;
+  }
+
+  document.getElementById("percentResult").textContent =
+    p + "% of " + n + " = " + (p * n / 100);
+}
+
+function discountCalc() {
+  const price = Number(document.getElementById("price").value);
+  const discount = Number(document.getElementById("discount").value);
+
+  if (document.getElementById("price").value === "" ||
+      document.getElementById("discount").value === "" ||
+      price < 0 || discount < 0 || discount > 100) {
+    document.getElementById("discountResult").textContent =
+      "Enter a valid price and discount (0–100%).";
+    return;
+  }
+
+  const finalPrice = price * (1 - discount / 100);
+
+  document.getElementById("discountResult").textContent =
+    "You pay: " + finalPrice.toFixed(2);
+}
+
+function ageCalc() {
+  const input = document.getElementById("birthday").value;
+  const result = document.getElementById("ageResult");
+
+  if (!input) {
+    result.textContent = "Choose your birthday.";
+    return;
+  }
+
+  const birth = new Date(input + "T00:00:00");
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+
+  const beforeBirthday =
+    today.getMonth() < birth.getMonth() ||
+    (today.getMonth() === birth.getMonth() &&
+     today.getDate() < birth.getDate());
+
+  if (beforeBirthday) age--;
+
+  result.textContent = age >= 0
+    ? "Your age is " + age + " years."
+    : "Enter a valid birthday.";
+}
+
+function convert() {
+  const value = document.getElementById("km").value;
+  document.getElementById("convertResult").textContent =
+    value === "" || Number(value) < 0
+    ? "Enter a valid distance."
+    : Number(value) + " km = " + (Number(value) * 1000) + " meters.";
+}
+</script>
+
+</body>
+</html>
